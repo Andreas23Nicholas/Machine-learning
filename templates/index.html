@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediksi - Training</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        * {
+            font-weight: 600;
+        }
+
+        body {
+            background: linear-gradient(rgba(255, 255, 255, 0.65), rgba(255, 255, 255, 0.65)), url("static/rumah.jpg");
+            background-size: cover;
+        }
+
+        .navbar .navbar-brand {
+            color: #10439F;
+            font-weight: bold;
+        }
+
+        .navbar .navbar-nav {
+            flex-direction: row;
+        }
+
+        .navbar .navbar-nav .nav-link {
+            padding-right: 15px;
+            padding-left: 15px;
+            color: #10439F;
+        }
+
+        .navbar-dark .navbar-nav .nav-link:focus,
+        .navbar-dark .navbar-nav .nav-link:hover {
+            color: #FFAF45
+        }
+
+        .navbar {
+            background-color: #fff;
+        }
+
+        table {
+            border-width: 3px;
+            width: 100%;
+            font-weight: 500;
+        }
+
+        th {
+            padding: 8px;
+            text-align: center;
+            border: 2px solid black;
+        }
+
+        td {
+            padding: 8px;
+            text-align: center;
+            border: 2px solid black;
+        }
+
+        .footer {
+            background-color: #fff;
+            color: #10439F;
+            padding: 20px 0;
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <a><img src="static/logoubm.webp" alt="" style="width: 70px; height: 50px;"></a>
+        <div class="container">
+            <a class="navbar-brand" href="#">Prediksi Harga Rumah</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Training</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/prediksi.html">Testing</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <h2>Upload File CSV</h2>
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <input type="file" name="csv_file" accept=".csv"><br><br>
+            <button type="submit" class="btn btn-primary"
+                style="background-color: #10439F; color: #FFAF45; font-weight: 600;">Upload file</button>
+        </form>
+
+        {% if data %}
+        <h3 style="margin-top: 10px;">Data Preview</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    {% for col in data.columns %}
+                    <th>{{ col }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {{ data | safe }}
+            </tbody>
+        </table>
+        {% endif %}
+
+        <h2 style="margin-top: 15px">Melakukan Preprocessing</h2>
+        <form action="/one_hot" method="post">
+            <button type="submit" class="btn btn-primary"
+                style="background-color: #10439F; color: #FFAF45; font-weight: 600;">Data Preprocessing</button>
+        </form>
+        {% if preprocessing %}
+        <table class="table">
+            <thead>
+                <tr>
+                    {% for col in preprocessing.columns %}
+                    <th>{{ col }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {{ preprocessing | safe }}
+            </tbody>
+        </table>
+        {% endif %}
+
+        <h2 style="margin-top: 10px;">Proses Train & Test</h2>
+        <form action="/modelroute" method="post">
+            <button type="submit" class="btn btn-primary"
+                style="background-color: #10439F; color: #FFAF45; font-weight: 600;">Pembuatan Model</button>
+        </form>
+        {% if note %}
+        <p>{{ note }}</p>
+        {% endif %}
+
+        <h2 style="margin-top: 10px;">Hasil</h2>
+        <p>Hasil dari data sebenarnya dan data prediksi</p>
+        <form action="/hasildata" method="post">
+            <button type="submit" class="btn btn-primary"
+                style="background-color: #10439F; color: #FFAF45; font-weight: 600;">Tampilkan hasil</button>
+        </form>
+        {% if hasil %}
+        <table class="table">
+            <tbody>
+                {{ hasil | safe }}
+            </tbody>
+        </table>
+        {% endif %}
+
+        <h2 style="margin-top: 10px;">Akurasi</h2>
+        <p>Hasil akurasi yang didapatkan dari model adalah</p>
+        <form action="/akurasi" method="post">
+            <button type="submit" class="btn btn-primary"
+                style="background-color: #10439F; color: #FFAF45; font-weight: 600;">Tampil Akurasi</button>
+        </form>
+        {% if mae %}
+        <h3 style="margin-top: 10px">Mean Absolute Error (MAE): <br>{{ mae }}</h3>
+        {% endif %}
+        {% if rsquared %}
+        <h3 style="margin-top: 10px">R square Score: <br>{{ rsquared }}</h3>
+        {% endif %}
+        {% if mape %}
+        <h3 style="margin-top: 10px">Mean Absolute Percentage Error (MAPE): <br>{{ mape }}%</h3>
+        {% endif %}
+
+        <h2 style="margin-top: 10px;">Data Visualisasi</h2>
+        <form action="/visual" method="post">
+            <button type="submit" class="btn btn-primary"
+                style="margin-bottom: 10px ; background-color: #10439F; color: #FFAF45; font-weight: 600;">Visualisasi</button>
+        </form>
+        {% if plot_path %}
+        <img src="{{ plot_path }}" alt="Plot">
+        {% endif %}
+
+    </div>
+
+    <footer class="footer">
+        <p> &copy; 2024 Andreas Nicholas. All rights reserved.</p>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prediksi - Testing</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    * {
+      font-weight: 600;
+    }
+
+    body {
+      background: linear-gradient(rgba(255, 255, 255, 0.65), rgba(255, 255, 255, 0.65)), url("static/rumah.jpg");
+      background-size: cover;
+    }
+
+    .navbar .navbar-brand {
+      color: #10439F;
+      font-weight: bold;
+    }
+
+    .navbar .navbar-nav {
+      flex-direction: row;
+    }
+
+    .navbar .navbar-nav .nav-link {
+      padding-right: 15px;
+      padding-left: 15px;
+      color: #10439F;
+    }
+
+    .navbar-dark .navbar-nav .nav-link:focus,
+    .navbar-dark .navbar-nav .nav-link:hover {
+      color: #FFAF45;
+    }
+
+    .navbar {
+      background-color: #fff;
+    }
+
+    .footer {
+      background-color: #fff;
+      color: #10439F;
+      padding: 20px 0;
+      text-align: center;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <a><img src="static/logoubm.webp" alt="" style="width: 70px; height: 50px;"></a>
+    <div class="container">
+      <a class="navbar-brand">Prediksi Harga Rumah</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/">Training</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/prediksi.html">Testing</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mt-5">
+    <div class="row">
+      <div class="col-md-6">
+        <h2 class="text-center mb-4">Testing</h2>
+        <form method="POST" action="/predict" id="formprediksi">
+          <div class="form-group">
+            <label for="LB">Luas Bangunan (m²)</label>
+            <input type="number" class="form-control" id="LB" name="LB" required style="font-weight: bolder;" max="1000"
+              min="20">
+          </div>
+          <div class="form-group">
+            <label for="LT">Luas Tanah (m²)</label>
+            <input type="number" class="form-control" id="LT" name="LT" required style="font-weight: bolder;" max="1000"
+              min="60">
+          </div>
+          <div class="form-group">
+            <label for="KM">Jumlah Kamar Mandi</label>
+            <input type="number" class="form-control" id="KM" name="KM" required style="font-weight: bolder;" max="10"
+              min="1">
+          </div>
+          <div class="form-group">
+            <label for="KT">Jumlah Kamar Tidur</label>
+            <input type="number" class="form-control" id="KT" name="KT" required style="font-weight: bolder;" max="10"
+              min="1">
+          </div>
+          <div class="form-group">
+            <label for="GRS">Jumlah Garasi</label>
+            <input type="number" class="form-control" id="GRS" name="GRS" required style="font-weight: bolder;" max="5"
+              min="0">
+          </div>
+          <div>
+            <p>Pilih Lokasi :</p>
+          </div>
+          <div class="form-check">
+            <input type="radio" class="form-check-input location-radio" id="Alam_Sutera" name="location"
+              value="Alam_Sutera" required>
+            <label class="form-check-label" for="Alam_Sutera">Alam Sutera</label>
+          </div>
+          <div class="form-check">
+            <input type="radio" class="form-check-input location-radio" id="BSD" name="location" value="BSD" required>
+            <label class="form-check-label" for="BSD">BSD</label>
+          </div>
+          <div class="form-check">
+            <input type="radio" class="form-check-input location-radio" id="Gading_Serpong" name="location"
+              value="Gading_Serpong" required>
+            <label class="form-check-label" for="Gading_Serpong">Gading Serpong</label>
+          </div>
+          <button type="submit" class="btn btn-primary mt-3"
+            style="background-color: #10439F; color: #FFAF45; font-weight: 600;">Prediksi Harga</button>
+          <button type="reset" class="btn btn-secondary mt-3" onclick="resetPriceDisplay()"
+            style="background-color: #E72929; color: #FFAF45; font-weight: 600;">Reset</button>
+        </form>
+      </div>
+      <div class="col-md-6">
+        {% if predicted_price %}
+        <div class="mt-3">
+          <h1 class="text-center" id="hapustampil">Harga prediksi:
+            <br><br>Rp {{ "{:,.0f}".format(predicted_price) }}
+          </h1>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <p> &copy; 2024 Andreas Nicholas. All rights reserved.</p>
+  </footer>
+
+  <script>
+    // menyimpan nilai
+    document.addEventListener("DOMContentLoaded", function () {
+      document.getElementById("formprediksi").addEventListener("submit", function (event) {
+        var inputs = document.querySelectorAll("input[type='number'], input[type='radio']");
+        inputs.forEach(function (input) {
+          if (input.type === 'radio') {
+            sessionStorage.setItem(input.id, input.checked);
+          } else {
+            sessionStorage.setItem(input.id, input.value);
+          }
+        });
+      });
+
+      // pulihkan data
+      var inputs = document.querySelectorAll("input[type='number'], input[type='radio']");
+      inputs.forEach(function (input) {
+        var storedValue = sessionStorage.getItem(input.id);
+        if (storedValue !== null) {
+          if (input.type === 'radio') {
+            input.checked = storedValue === 'true';
+          } else {
+            input.value = storedValue;
+          }
+        }
+      });
+    });
+
+    document.getElementById("formprediksi").addEventListener("submit", function (event) {
+      var inputs = document.querySelectorAll("input[type='number']");
+      var valid = true;
+      inputs.forEach(function (input) {
+        if (input.value > 1000) {
+          valid = false;
+        }
+      });
+      if (!valid) {
+        event.preventDefault();
+        alert("Nilai input harus sama atau kurang.");
+      }
+    });
+
+    function resetPriceDisplay() {
+      const priceDisplay = document.getElementById('hapustampil');
+      if (priceDisplay) {
+        priceDisplay.innerHTML = '';
+      }
+    }
+
+  </script>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>
